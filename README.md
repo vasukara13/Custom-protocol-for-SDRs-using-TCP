@@ -3,9 +3,11 @@
 For Linux G++:
 
 -->g++ server.cpp -lpthread -o server
+
 --> ./server
 
 --> g++ client.cpp -o client
+
 --> ./client
 
 >run server and client in seperate terminals.

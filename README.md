@@ -12,3 +12,5 @@ For Linux G++:
 
 >run server and client in seperate terminals.
 >change the *ip to the local ip of the machine you are running.
+
+MOORE FUNCTIONS WILL BE IMPLEMENTED IN THE FUTURE.

@@ -309,29 +309,6 @@ void *connection_handler(void * sockfd)
 
          recieve_packet(sock); //this will only accept one packet
     }
-    /*
-    while( (read_size = recv(sock , client_message , 2000 , 0)) > 0 )
-    {   
-
-        //end of string marker
-		client_message[read_size] = '\0';
-		
-		//Send the message back to client
-        write(sock , client_message , strlen(client_message));
-		
-		//clear the message buffer
-		memset(client_message, 0, 2000);
-    }
-     
-    if(read_size == 0)
-    {
-        puts("Client disconnected");
-        fflush(stdout);
-    }
-    else if(read_size == -1)
-    {
-        perror("recv failed");
-    }
-         */
+ 
     return 0;
 } 

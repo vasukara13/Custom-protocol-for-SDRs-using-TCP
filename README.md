@@ -1,4 +1,5 @@
 # Fragmentation-Reassembly-of-IP-packets
+A program made to Transfer files wirelessly in Software defined radios,Using the concepts of Fragmentation and Reassembly.Both Client and Server uses a custom file transfer protocol based on TCP connection.
 
 For Linux G++:
 

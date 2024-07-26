@@ -11,8 +11,8 @@ For Linux G++:
 
 --> ./client
 
->run server and client in seperate terminals.
->change the *ip to the local ip of the machine you are running.
->To change file source change the "file_name" in struct config
+Run server and client in seperate terminals.
+Change the *ip to the local ip of the machine you are running.
+To change file source change the "file_name" in struct config
 
 MORE FUNCTIONS WILL BE IMPLEMENTED IN THE FUTURE.

@@ -86,12 +86,3 @@ sudo ufw reload
 
 ***
 
-I've expanded the "Key Features" and "How It Works" sections to detail the multi-client functionality. Let me know if you have any other adjustments in mind.
-
-[1](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/f0fcc146-4b9e-42c7-b220-10510754d768/client_linuxv6.cpp)
-[2](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/c638fc14-9bb3-4d39-ad35-055ae2696870/encrypt_client.cpp)
-[3](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/f1291195-d5e7-48fa-aea5-7e2718110f9f/server_linuxv6.cpp)
-[4](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/849db51c-2cdf-41de-96dd-b423a426cd5f/server_linuxv6.cpp)
-[5](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/d73773fc-e255-4179-8d82-b0772836cfad/server_linuxv6.cpp)
-[6](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/faed45bf-f310-41e0-9e08-2449ad6b7d28/server_linuxv6.cpp)
-[7](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/c9386814-fc9c-4f09-b54e-9010fd80ba48/decrypt_server.cpp)

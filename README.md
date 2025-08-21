@@ -1,68 +1,97 @@
-# Fragmentation-Reassembly-of-IP-packets
-A program made to Transfer files wirelessly in Software defined radios,Using the concepts of Fragmentation and Reassembly.Both Client and Server uses a custom file transfer protocol based on TCP connection.
-**##WORKS ONLY BETWEEN LINUX BASED SYSTEM.**
+***
 
-**Client (client.cpp)**
-The client performs the following tasks:
+# Secure UDP File Transfer with Diffie-Hellman & AES-GCM
 
-1.File Reading: Reads the file from disk, converting it into hexadecimal format for transmission.
+This project is a C++ client-server application designed for the secure and efficient transfer of files over a network. It implements a hybrid TCP/UDP protocol that leverages the strengths of both: TCP for a reliable, secure key exchange and UDP for high-speed, low-overhead data transmission.
 
-2.Fragmentation: Splits the file into fragments according to the MTU size.
+The core of the system is built on strong cryptographic principles to ensure that data remains confidential and unaltered during transit.
 
-3.Packet Creation: Adds metadata (like sequence ID, fragment length) to each fragment.
+### Key Features
 
-4.Transmission: Sends each fragment to the server and waits for confirmation of successful receipt.
+*   **Secure Key Exchange**: Establishes a shared secret between the client and server using the Diffie-Hellman (DH) algorithm over a reliable TCP connection. This ensures that the session key itself is never transmitted directly.
+*   **Robust Encryption**: File data is encrypted using **AES-256-GCM**, an Authenticated Encryption with Associated Data (AEAD) cipher. This provides both strong confidentiality and integrity, protecting against eavesdropping and data tampering.
+*   **High-Speed UDP Transfer**: The actual file content is fragmented and sent using UDP to maximize throughput and reduce the latency associated with connection-oriented protocols.
+*   **Concurrent Multi-Client Architecture**: The server is multi-threaded and uses a map-based structure to handle multiple clients at the same time. It constantly receives packets, processes their headers, and places each fragment in the correct buffer for the corresponding client, allowing for simultaneous, segregated file transfers.
+*   **Custom Fragmentation Protocol**: A custom packet structure is used to handle file fragmentation and reassembly. The header includes a sequence number, total fragment count, and a `FIN` flag to manage out-of-order delivery and signal the end of a transmission.
+*   **Configurable MTU**: The client uses a custom **Maximum Transmission Unit (MTU)** set to 1200 bytes to intelligently fragment files. This optimizes for network conditions by creating packets that avoid IP-level fragmentation, which can improve reliability.
+*   **Industry-Standard Libraries**: Built using **OpenSSL** for cryptographic functions and the **GNU Multiple Precision Arithmetic Library (GMP)** to handle the large-number calculations required by the Diffie-Hellman exchange.
 
-5.Connection Handling: Establishes a TCP connection to the server and sends the file fragments.
+### How It Works
 
+The transfer process is divided into two main phases:
 
-**Server (server.cpp)**
-The server performs the following tasks:
+1.  **Phase 1: Registration and Key Exchange (via TCP)**
+    *   The client initiates a TCP connection to the server's registration port, which defaults to **8081**.
+    *   A dedicated thread on the server handles the client's connection.
+    *   The client and server perform a Diffie-Hellman key exchange to generate a unique session key. The shared secret from DH is processed through a SHA-256 Key Derivation Function (KDF) to create a cryptographically secure 256-bit AES key.
+    *   The server stores this session key in a global map, keyed by the client's unique IP address and port. The TCP connection is then closed.
 
-1. Packet Reception: Receives file fragments from the client.
+2.  **Phase 2: Encrypted File Transfer (via UDP)**
+    *   The client reads the source file, splitting it into smaller fragments sized appropriately for the network MTU.
+    *   Each fragment is encrypted using the established session key (AES-256-GCM) and wrapped in a custom UDP packet.
+    *   The server's main thread continuously listens for UDP packets on its data port (default **8080**).
+    *   When a packet arrives, the server reads the header and uses the sender's IP and port to look up the correct session key and fragment buffer in its map.
+    *   It decrypts the payload and places the fragment into its appropriate place based on the sequence number. Once all fragments for a client are received (indicated by the `FIN` flag), the server reassembles the file.
 
-2. Reassembly: Reconstructs the original file by ordering the fragments using sequence IDs.
+### Getting Started
 
-3. Error Handling: Verifies that fragments are received in the correct sequence and that no corruption occurred during transmission.
+**Prerequisites:**
+*   A C++ compiler (g++)
+*   OpenSSL development libraries (`libssl-dev`)
+*   GMP development libraries (`libgmp-dev`)
 
-4. File Writing: After all fragments are received and reassembled, the file is written to disk in its original format.
+**Compilation:**
 
+```bash
+# Compile the server
+g++ server_linuxv6.cpp -o server -lssl -lcrypto -lgmpxx -lgmp -pthread
 
-
-**Client Code (client.cpp):**
-
- - fragment(): Fragments the file into smaller parts for transmission.
-
- - send_fragment(): Sends each fragment and waits for confirmation.
-
- - fragment_creater(): Iterates through the file and splits it into smaller fragments.
-
- - packet_creater(): Reads the file, converts it to hexadecimal, and triggers the fragmentation and transmission process.
-
-
-
-**Server Code (server.cpp):**
-
- - packet_check_reassembler(): Checks if the received packet is valid and reassembles the fragments.
-
- - recieve_packet(): Receives a fragment, verifies it, and calls the reassembly function.
-
- - hex2file(): Converts the reassembled hexadecimal data back into binary format and writes it to disk.
-
-
-**Commands For Linux g++:**
+# Compile the client
+g++ client_linuxv6.cpp -o client -lssl -lcrypto -lgmpxx -lgmp
 ```
-g++ server.cpp -lpthread -o server
 
-./server
+**Firewall Configuration (Linux using `ufw`):**
+Before running the server, you may need to allow traffic on the necessary ports.
 
-g++ client.cpp -o client
+```bash
+# Check firewall status
+sudo ufw status
 
-./client
+# Allow the default ports
+sudo ufw allow 8080/tcp
+sudo ufw allow 8080/udp
+sudo ufw allow 8081/tcp
 
+# Reload firewall to apply changes
+sudo ufw reload
 ```
-Run server and client in seperate terminals.
-Change the *ip to the local ip of the machine you are running.
-To change file source change the "file_name" in struct config
 
-MORE FUNCTIONS WILL BE IMPLEMENTED IN THE FUTURE.
+**Usage:**
+
+1.  **Run the server:**
+    The server listens on UDP port `8080` for data and TCP port `8081` for registration. These default values can be changed by modifying the `PORT` and `TCP_PORT` macros in `server_linuxv6.cpp`.
+    ```bash
+    ./server
+    ```
+
+2.  **Run the client:**
+    The client connects to the server's IP address, specifies the UDP data port, and provides the path to the file to be sent.
+    ```bash
+    ./client <server_ip> <server_udp_port> <path_to_your_file>
+    ```
+    For example, to connect to a server on the same machine using the default port:
+    ```bash
+    ./client 127.0.0.1 8080 document.pdf
+    ```
+
+***
+
+I've expanded the "Key Features" and "How It Works" sections to detail the multi-client functionality. Let me know if you have any other adjustments in mind.
+
+[1](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/f0fcc146-4b9e-42c7-b220-10510754d768/client_linuxv6.cpp)
+[2](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/c638fc14-9bb3-4d39-ad35-055ae2696870/encrypt_client.cpp)
+[3](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/f1291195-d5e7-48fa-aea5-7e2718110f9f/server_linuxv6.cpp)
+[4](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/849db51c-2cdf-41de-96dd-b423a426cd5f/server_linuxv6.cpp)
+[5](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/d73773fc-e255-4179-8d82-b0772836cfad/server_linuxv6.cpp)
+[6](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/faed45bf-f310-41e0-9e08-2449ad6b7d28/server_linuxv6.cpp)
+[7](https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/52180456/c9386814-fc9c-4f09-b54e-9010fd80ba48/decrypt_server.cpp)

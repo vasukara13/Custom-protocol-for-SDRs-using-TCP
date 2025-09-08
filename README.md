@@ -45,10 +45,10 @@ The transfer process is divided into two main phases:
 
 ```bash
 # Compile the server
-g++ server_linuxv6.cpp -o server -lssl -lcrypto -lgmpxx -lgmp -pthread
+g++ server_linuxv7.cpp -o server -lssl -lcrypto -lgmpxx -lgmp -pthread
 
 # Compile the client
-g++ client_linuxv6.cpp -o client -lssl -lcrypto -lgmpxx -lgmp
+g++ client_linuxv7.cpp -o client -lssl -lcrypto -lgmpxx -lgmp
 ```
 
 **Firewall Configuration (Linux using `ufw`):**

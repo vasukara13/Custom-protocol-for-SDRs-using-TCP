@@ -13,7 +13,7 @@ The core of the system is built on strong cryptographic principles to ensure tha
 *   **High-Speed UDP Transfer**: The actual file content is fragmented and sent using UDP to maximize throughput and reduce the latency associated with connection-oriented protocols.
 *   **Concurrent Multi-Client Architecture**: The server is multi-threaded and uses a map-based structure to handle multiple clients at the same time. It constantly receives packets, processes their headers, and places each fragment in the correct buffer for the corresponding client, allowing for simultaneous, segregated file transfers.
 *   **Custom Fragmentation Protocol**: A custom packet structure is used to handle file fragmentation and reassembly. The header includes a sequence number, total fragment count, and a `FIN` flag to manage out-of-order delivery and signal the end of a transmission.
-![Custom Fragmentation Protocol](images/fragmentation_protocol.png)
+![Custom Fragmentation Protocol](fragmentation_protocol.png)
 *   **Configurable MTU**: The client uses a custom **Maximum Transmission Unit (MTU)** set to 1200 bytes to intelligently fragment files. This optimizes for network conditions by creating packets that avoid IP-level fragmentation, which can improve reliability.
 *   **Industry-Standard Libraries**: Built using **OpenSSL** for cryptographic functions and the **GNU Multiple Precision Arithmetic Library (GMP)** to handle the large-number calculations required by the Diffie-Hellman exchange.
 
